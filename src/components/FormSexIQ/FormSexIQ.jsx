@@ -41,72 +41,74 @@ export default function FormSexIQ() {
     );
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!isFormValid()) {
-      alert("Будь ласка, заповніть усі обов'язкові поля.");
-      return;
-    }
+ const handleSubmit = async (e) => {
+   e.preventDefault();
+   if (!isFormValid()) {
+     alert("Будь ласка, заповніть усі обов'язкові поля.");
+     return;
+   }
 
-    const cleanTelegramNick = formData.telegramNick.startsWith("@")
-      ? formData.telegramNick.substring(1)
-      : formData.telegramNick;
+   const cleanTelegramNick = formData.telegramNick.startsWith("@")
+     ? formData.telegramNick.substring(1)
+     : formData.telegramNick;
 
-    try {
-      await api.createUnifiedUser({
-        user: {
-          fullName: {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-          },
-          phoneNumber: formData.phone,
-          email: formData.email.toLowerCase(),
-          telegram: {
-            id: "",
-            userName: cleanTelegramNick || "",
-            firstName: "",
-            languageCode: "",
-            phone: "",
-            isPremium: false,
-            source: [],
-            transitions: [],
-          },
-        },
-        conferences: [
+  const payload = {
+    fullName: {
+      // ⚠️ Эти поля должны быть на верхнем уровне
+      firstName: formData.firstName || "",
+      lastName: formData.lastName || "",
+    },
+    phoneNumber: formData.phone || "",
+    email: formData.email.toLowerCase() || "",
+    telegram: {
+      id: "",
+      userName: cleanTelegramNick || "",
+      firstName: "",
+      languageCode: "",
+      phone: "",
+      isPremium: false,
+      source: [],
+      transitions: [],
+    },
+    conferences: [
+      {
+        conference: "Sex IQ ORDER",
+        type: "online",
+        ticketType: "without ticket",
+        ticketsQuantity: 1,
+        totalAmount: 0,
+        takeBrunch: false,
+        paymentData: {},
+        promoCode: "",
+        utmMarks: [
           {
-            conference: "Sex IQ ORDER",
-            type: "online",
-            ticketType: "without ticket",
-            ticketsQuantity: 1,
-            totalAmount: 0,
-            takeBrunch: false,
-            paymentData: {},
-            promoCode: "",
-            utmMarks: [
-              {
-                source: utmParams.utm_source,
-                medium: utmParams.utm_medium,
-                campaign: utmParams.utm_campaign,
-              },
-                ],
-            moreInfo: formData.moreInfo,
+            source: utmParams.utm_source || "",
+            medium: utmParams.utm_medium || "",
+            campaign: utmParams.utm_campaign || "",
           },
         ],
-      });
+        moreInfo: formData.moreInfo || "",
+      },
+    ],
+  };
 
-      alert("Анкету успішно надіслано! З вами зв'яжеться команда ❤️");
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        telegramNick: "",
-      });
-    } catch (error) {
-      console.error("Помилка при збереженні анкети:", error);
-      alert("Виникла помилка. Спробуйте ще раз.");
-    }
-    };
+   try {
+     await api.createUnifiedUser(payload);
+
+     alert("Анкету успішно надіслано! З вами зв'яжеться команда ❤️");
+     setFormData({
+       firstName: "",
+       lastName: "",
+       email: "",
+       phone: "",
+       telegramNick: "",
+       moreInfo: "",
+     });
+   } catch (error) {
+     console.error("Помилка при збереженні анкети:", error);
+     alert("Виникла помилка. Спробуйте ще раз.");
+   }
+ };
     
     const handleTextareaChange = (e) => {
       const textarea = e.target;
