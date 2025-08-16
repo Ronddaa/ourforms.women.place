@@ -1,6 +1,6 @@
 import styles from "./Form.module.css";
 
-export default function Form() {
+export default function MainPage() {
   
   return (
     <section className={styles.FormSection}>
