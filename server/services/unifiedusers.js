@@ -6,9 +6,8 @@ export const upsertunifieduser = async (payload) => {
   console.log(
     "Payload received in upsertunifieduser:",
     JSON.stringify(payload, null, 2)
-  );
-  const { user, conferences } = payload;
-  const { fullName, phoneNumber, email, telegram } = user;
+  ); // ⚠️ ИСПРАВЛЕНО: Деструктурируем поля напрямую из `payload`, // а не из несуществующего объекта `user`
+  const { fullName, phoneNumber, email, telegram, conferences } = payload;
 
   const searchQuery = { $or: [] };
 
@@ -41,8 +40,8 @@ export const upsertunifieduser = async (payload) => {
   }
 
   const newConferenceData = conferences[0];
-  let targetConferenceIndex; // Индекс конференции, которую мы обновили или добавили
-  let actionTaken = "added"; // Для логирования: 'updated' или 'added'
+  let targetConferenceIndex;
+  let actionTaken = "added";
 
   if (unifieduserData) {
     // Обновление основных полей пользователя и Telegram
@@ -84,15 +83,12 @@ export const upsertunifieduser = async (payload) => {
           }
         });
       }
-    }
+    } // --- ЛОГИКА ОБРАБОТКИ КОНФЕРЕНЦИЙ ---
 
-    // --- ЛОГИКА ОБРАБОТКИ КОНФЕРЕНЦИЙ ---
     let foundExistingConferenceToUpdate = false;
 
     for (let i = 0; i < unifieduserData.conferences.length; i++) {
       const existingConf = unifieduserData.conferences[i];
-      // Условие для ОБНОВЛЕНИЯ: та же конференция И НЕ ОПЛАЧЕНА
-      // Это позволяет перезаписать "висящий" неоплаченный заказ на ту же конференцию
       if (
         existingConf.conference === newConferenceData.conference &&
         existingConf.paymentData?.status !== "paid"
@@ -107,20 +103,18 @@ export const upsertunifieduser = async (payload) => {
         console.log(
           `Updating existing non-paid conference "${newConferenceData.conference}" for user ${unifieduserData._id} at index ${i}`
         );
-        break; // Важно выйти из цикла после обновления
+        break;
       }
     }
 
     if (!foundExistingConferenceToUpdate) {
-      // Если не нашли подходящую для обновления (т.е. все существующие оплачены или это другая конференция), добавляем новую
       unifieduserData.conferences.push(newConferenceData);
-      targetConferenceIndex = unifieduserData.conferences.length - 1; // Индекс только что добавленной конференции
+      targetConferenceIndex = unifieduserData.conferences.length - 1;
       actionTaken = "added";
       console.log(
         `Adding new conference "${newConferenceData.conference}" for user ${unifieduserData._id} at index ${targetConferenceIndex}`
       );
     }
-    // --- КОНЕЦ ЛОГИКИ ОБРАБОТКИ КОНФЕРЕНЦИЙ ---
 
     console.log(
       "Unified user data BEFORE save (after conference logic):",
@@ -129,13 +123,16 @@ export const upsertunifieduser = async (payload) => {
     await unifieduserData.save();
     console.log(`Existing user ${actionTaken}:`, unifieduserData._id);
   } else {
-    // Пользователь не найден, создаем нового
+    // ⚠️ ИСПРАВЛЕНО: Создаем нового пользователя с полями на верхнем уровне
     const newUserData = {
-      ...user,
+      fullName,
+      phoneNumber,
+      email,
+      telegram,
       conferences: [newConferenceData],
     };
     unifieduserData = await unifiedusersCollection.create(newUserData);
-    targetConferenceIndex = 0; // Для нового пользователя это всегда будет первый элемент
+    targetConferenceIndex = 0;
     console.log("New user created:", unifieduserData._id);
   }
 
@@ -145,7 +142,6 @@ export const upsertunifieduser = async (payload) => {
   );
   console.log("--- upsertunifieduser END ---");
 
-  // Возвращаем объект пользователя и индекс конференции, которую нужно обновить paymentData
   return {
     unifieduser: unifieduserData,
     conferenceIndex: targetConferenceIndex,
