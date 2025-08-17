@@ -35,7 +35,7 @@ const unifiedUserSchema = new Schema(
         status: {
           type: String,
           enum: ["pending", "paid", "failed"],
-          default: "pending",
+          default: "failed",
         }, // Статус оплаты
       },
     },
