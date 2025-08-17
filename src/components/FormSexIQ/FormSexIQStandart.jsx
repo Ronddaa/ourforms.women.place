@@ -75,18 +75,14 @@ export default function FormSexIQ() {
           source: [],
           transitions: [],
         },
+        sexIQ: {
+        type: "online",
+        ticketType: "standart",
+        totalAmount: 10,
+      },
         moreInfo: formData.moreInfo || "",
         utm: utmParams, // ✅ Додаємо UTM-параметри до payload
       },
-      conferences: [
-        {
-          sexIQ: {
-            type: "online",
-            ticketType: "standart",
-            totalAmount: 549,
-          },
-        },
-      ],
     };
 
     try {
@@ -126,7 +122,7 @@ export default function FormSexIQ() {
           <span>950€</span>549€
         </p>
         <input
-          className={styles.inputSexIQ}
+        className={styles.inputSexIQ}
           id="firstName"
           type="text"
           placeholder="Ім’я*"
@@ -135,7 +131,7 @@ export default function FormSexIQ() {
           required
         />
         <input
-          className={styles.inputSexIQ}
+        className={styles.inputSexIQ}
           id="lastName"
           type="text"
           placeholder="Прізвище*"
@@ -144,7 +140,7 @@ export default function FormSexIQ() {
           required
         />
         <input
-          className={styles.inputSexIQ}
+        className={styles.inputSexIQ}
           id="email"
           type="email"
           placeholder="Email*"
@@ -153,7 +149,7 @@ export default function FormSexIQ() {
           required
         />
         <input
-          className={styles.inputSexIQ}
+        className={styles.inputSexIQ}
           id="phone"
           type="tel"
           placeholder="Телефон*"
@@ -162,7 +158,7 @@ export default function FormSexIQ() {
           required
         />
         <input
-          className={styles.inputSexIQ}
+        className={styles.inputSexIQ}
           id="telegramNick"
           type="text"
           placeholder="Telegram"

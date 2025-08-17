@@ -29,7 +29,15 @@ const unifiedUserSchema = new Schema(
     sexIQ: {
       type: { type: String, enum: ["online", "offline"], default: "" },
       ticketType: { type: String, default: "" },
-      totalAmount: { type: Number, default: "" }
+      totalAmount: { type: Number, default: "" },
+      paymentData: {
+        invoiceId: String, // ID инвойса для оплаты
+        status: {
+          type: String,
+          enum: ["pending", "paid", "failed"],
+          default: "pending",
+        }, // Статус оплаты
+      },
     },
     conferences: [
       {

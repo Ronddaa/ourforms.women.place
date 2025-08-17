@@ -26,7 +26,7 @@ export const createunifieduserSchema = Joi.object({
       )
       .default([]),
   }).optional(),
-
+  
   conferences: Joi.array()
     .items(
       Joi.object({

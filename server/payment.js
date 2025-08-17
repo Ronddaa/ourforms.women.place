@@ -19,22 +19,19 @@ const monoBankWebhookUrl = env(
 
 // ---------- Обработчик для создания платежа ----------
 export const createPaymentHandler = async (req, res, next) => {
-  const { user, conferences } = req.body;
+  // ✅ ИСПРАВЛЕНО: Фронтенд отправляет все данные в объекте 'user'.
+  const { user } = req.body;
 
-  if (
-    !user ||
-    !conferences ||
-    !Array.isArray(conferences) ||
-    conferences.length === 0
-  ) {
-    return res
-      .status(400)
-      .json({ error: "Missing required fields or invalid format" });
+  if (!user || !user.sexIQ || !user.sexIQ.totalAmount) {
+    return res.status(400).json({
+      error: "Отсутствуют обязательные поля user или sexIQ в запросе.",
+    });
   }
 
-  const purchase = conferences[0];
   try {
-    const totalAmountFromFrontend = purchase.totalAmount;
+    // ✅ ИСПРАВЛЕНО: Извлекаем sexIQ из объекта 'user', как на фронтенде
+    const { sexIQ, ...restOfUser } = user;
+    const totalAmountFromFrontend = sexIQ.totalAmount;
 
     if (
       typeof totalAmountFromFrontend !== "number" ||
@@ -43,19 +40,21 @@ export const createPaymentHandler = async (req, res, next) => {
       return res.status(400).json({ error: "Некорректная сумма для оплаты" });
     }
 
-    const { unifieduser, conferenceIndex } = await upsertunifieduser({
-      user,
-      conferences,
+    // ✅ Передаем 'user' и 'sexIQ' как отдельные объекты в сервис upsertunifieduser
+    const { unifieduser } = await upsertunifieduser({
+      user: restOfUser,
+      sexIQ: sexIQ,
     });
-    const conferenceId = unifieduser.conferences[conferenceIndex]._id; // ✅ Сумма напрямую из фронтенда, конвертируем в центы
+    // ✅ Используем _id пользователя, так как sexIQ является отдельным полем
+    const userId = unifieduser._id;
 
     const amountInCents = Math.round(totalAmountFromFrontend * 100);
-    const currencyCodeEUR = 978; // Код валюты для EUR
+    const currencyCodeEUR = 980; // Код валюты для EUR
     console.log(
       `💶 Создание платежа на сумму: ${totalAmountFromFrontend} EUR (${amountInCents} центов)`
     );
 
-    const redirectUrl = `${monoBankRedirectUrl}/${unifieduser._id}/${conferenceId}`;
+    const redirectUrl = `${monoBankRedirectUrl}/${userId}/sexIQ-payment`;
     const monoResponse = await axios.post(
       "https://api.monobank.ua/api/merchant/invoice/create",
       {
@@ -77,10 +76,11 @@ export const createPaymentHandler = async (req, res, next) => {
       status: "pending",
     };
 
-    unifieduser.conferences[conferenceIndex].paymentData = paymentData;
+    // ✅ ИСПРАВЛЕНО: Обновляем поле sexIQ.paymentData напрямую
+    unifieduser.sexIQ.paymentData = paymentData;
 
     await updateunifieduserById(unifieduser._id, {
-      conferences: unifieduser.conferences,
+      sexIQ: unifieduser.sexIQ,
     });
 
     res.status(200).json({
@@ -103,8 +103,9 @@ export const paymentCallbackHandler = async (req, res, next) => {
   }
 
   try {
+    // ✅ ИСПРАВЛЕНО: Ищем по invoiceId в поле sexIQ
     const unifieduser = await unifiedusersCollection.findOne({
-      "conferences.paymentData.invoiceId": invoiceId,
+      "sexIQ.paymentData.invoiceId": invoiceId,
     });
 
     if (!unifieduser) {
@@ -119,22 +120,19 @@ export const paymentCallbackHandler = async (req, res, next) => {
     };
     const monoStatus = status.toLowerCase();
 
-    const conferenceToUpdate = unifieduser.conferences.find(
-      (conf) => conf.paymentData?.invoiceId === invoiceId
-    );
-
-    if (conferenceToUpdate) {
-      conferenceToUpdate.paymentData.status = statusMap[monoStatus] || "failed";
+    // ✅ ИСПРАВЛЕНО: Обновляем статус в поле sexIQ напрямую, без поиска
+    if (unifieduser.sexIQ && unifieduser.sexIQ.paymentData) {
+      unifieduser.sexIQ.paymentData.status = statusMap[monoStatus] || "failed";
 
       await updateunifieduserById(unifieduser._id, {
-        conferences: unifieduser.conferences,
+        sexIQ: unifieduser.sexIQ,
       });
       console.log(
         `Unified user ${unifieduser._id} saved successfully AFTER payment callback.`
       );
     } else {
       console.warn(
-        `⚠️ Конференция с invoiceId ${invoiceId} не найдена в unifieduser ${unifieduser._id}`
+        `⚠️ Информация о платеже для invoiceId ${invoiceId} не найдена в unifieduser ${unifieduser._id}`
       );
     }
 
