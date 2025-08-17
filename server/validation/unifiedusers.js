@@ -2,12 +2,12 @@ import Joi from "joi";
 
 export const createunifieduserSchema = Joi.object({
   fullName: Joi.object({
-    firstName: Joi.string().required().allow(""),
-    lastName: Joi.string().required().allow(""),
-  }).required(),
+    firstName: Joi.string().allow(""),
+    lastName: Joi.string().allow(""),
+  }),
 
-  phoneNumber: Joi.string().required().allow(""),
-  email: Joi.string().email().required().allow(""),
+  phoneNumber: Joi.string().allow(""),
+  email: Joi.string().email().allow(""),
 
   telegram: Joi.object({
     id: Joi.string().allow("", null),
@@ -30,10 +30,10 @@ export const createunifieduserSchema = Joi.object({
   conferences: Joi.array()
     .items(
       Joi.object({
-        conference: Joi.string().required(),
-        type: Joi.string().valid("online", "offline").required(),
-        ticketType: Joi.string().required(),
-        ticketsQuantity: Joi.number().integer().min(1).required(),
+        conference: Joi.string(),
+        type: Joi.string().valid("online", "offline"),
+        ticketType: Joi.string(),
+        ticketsQuantity: Joi.number().integer().min(1),
         totalAmount: Joi.number().min(0).optional().default(0),
         takeBrunch: Joi.boolean().default(false),
         paymentData: Joi.object({
@@ -57,8 +57,8 @@ export const createunifieduserSchema = Joi.object({
       })
     )
     .min(1)
-    .required(),
+    ,
 
   createdAt: Joi.date().optional(),
   updatedAt: Joi.date().optional(),
-}).unknown(true); // `unknown(true)` позволяет игнорировать неизвестные поля
+}).unknown(false); // `unknown(true)` позволяет игнорировать неизвестные поля

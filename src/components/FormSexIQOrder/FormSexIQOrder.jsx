@@ -1,9 +1,9 @@
-import styles from "./FormSexIQ.module.css";
+import styles from "./FormSexIQOrder.module.css";
 import { useState, useEffect } from "react";
 import SexIQIMG from "./SexIQIMG.webp";
 import api from "../../api/api.js"; // Убедись, что путь правильный
 
-export default function FormSexIQ() {
+export default function FormSexIQOrder() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",

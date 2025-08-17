@@ -9,6 +9,7 @@ import initMongoConnection from "./db/initMongoConnection.js";
 import router from "./routers/index.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { utmTracker } from "./middlewares/utmMarks.js";
+import { createPaymentHandler, paymentCallbackHandler } from "./payment.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -44,6 +45,10 @@ app.use(cookieParser());
 
 app.use(utmTracker);
 app.use("/api", router);
+
+// Подключаем обработчики платежей напрямую
+app.post("/api/create-payment", createPaymentHandler);
+app.post("/api/payment-callback", paymentCallbackHandler);
 
 // ---------- Статика и SPA ----------
 const staticFilesPath = join(__dirname, "../");

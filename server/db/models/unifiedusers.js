@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { type } from "os";
 
 const unifiedUserSchema = new Schema(
   {
@@ -25,13 +26,18 @@ const unifiedUserSchema = new Schema(
         },
       ],
     },
+    sexIQ: {
+      type: { type: String, enum: ["online", "offline"], default: "" },
+      ticketType: { type: String, default: "" },
+      totalAmount: { type: Number, default: "" }
+    },
     conferences: [
       {
-        conference: { type: String, required: true }, // Название конференции или встречи
-        type: { type: String, enum: ["online", "offline"], required: true }, // Онлайн или офлайн встреча
-        ticketType: { type: String, required: true }, // Тип билета или тарифа
-        ticketsQuantity: { type: Number, required: true }, // Количество билетов или мест на мероприятие
-        totalAmount: { type: Number, required: true }, // Общая сумма потраченная на покупку мест или билетов
+        conference: { type: String, default: "" }, // Название конференции или встречи
+        type: { type: String, enum: ["online", "offline"], default: "" }, // Онлайн или офлайн встреча
+        ticketType: { type: String, default: "" }, // Тип билета или тарифа
+        ticketsQuantity: { type: Number, default: "" }, // Количество билетов или мест на мероприятие
+        totalAmount: { type: Number, default: "" }, // Общая сумма потраченная на покупку мест или билетов
         takeBrunch: { type: Boolean, default: false }, // Была ли выбрана опция "Бранч"
         paymentData: {
           invoiceId: String, // ID инвойса для оплаты
