@@ -6,16 +6,15 @@ export const upsertunifieduser = async (payload) => {
   console.log(
     "Payload received in upsertunifieduser:",
     JSON.stringify(payload, null, 2)
-  );
+  ); // ✅ conferences всегда массив, даже если не пришёл
 
-  // ✅ conferences всегда массив, даже если не пришёл
   const {
     fullName,
     phoneNumber,
     email,
     telegram,
     conferences = [],
-    sexIQ,
+    sexIQ, // <--- Здесь нужно быть осторожным
     utm,
   } = payload;
 
@@ -47,9 +46,8 @@ export const upsertunifieduser = async (payload) => {
         JSON.stringify(unifieduserData.conferences, null, 2)
       );
     }
-  }
+  } // ✅ безопасно достаём первую конференцию
 
-  // ✅ безопасно достаём первую конференцию
   const newConferenceData = conferences[0] || null;
 
   let targetConferenceIndex;
@@ -96,9 +94,8 @@ export const upsertunifieduser = async (payload) => {
           }
         });
       }
-    }
+    } // --- Логика обработки конференций ---
 
-    // --- Логика обработки конференций ---
     if (newConferenceData) {
       let foundExistingConferenceToUpdate = false;
 
@@ -130,8 +127,11 @@ export const upsertunifieduser = async (payload) => {
           `Adding new conference "${newConferenceData.conference}" for user ${unifieduserData._id} at index ${targetConferenceIndex}`
         );
       }
+    } // ✅ Добавляем логику для sexIQ
+    if (sexIQ) {
+      unifieduserData.sexIQ = sexIQ;
+      console.log("Updating existing user with sexIQ data.");
     }
-
     console.log(
       "Unified user data BEFORE save (after conference logic):",
       JSON.stringify(unifieduserData, null, 2)
@@ -145,10 +145,14 @@ export const upsertunifieduser = async (payload) => {
       phoneNumber,
       email,
       telegram,
-      conferences: newConferenceData ? [newConferenceData] : [], // ✅ если конференции нет — пустой массив
+      conferences: newConferenceData ? [newConferenceData] : [],
       sexIQ,
-      utm
-    };
+      utm,
+    }; // ✅ Добавляем проверку и дефолтные значения для sexIQ при создании нового пользователя
+
+    if (sexIQ && !sexIQ.type) {
+      newUserData.sexIQ.type = "online";
+    }
     unifieduserData = await unifiedusersCollection.create(newUserData);
     targetConferenceIndex = newConferenceData ? 0 : null;
     console.log("New user created:", unifieduserData._id);

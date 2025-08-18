@@ -10,7 +10,7 @@ import env from "./utils/env.js";
 const monoBankToken = env("MONOBANK_TOKEN");
 const monoBankRedirectUrl = env(
   "MONOBANK_REDIRECT_URL",
-  "https://barcelonakod.women.place/thank-you"
+  "https://ourforms.women.place/sexiqstandart"
 );
 const monoBankWebhookUrl = env(
   "MONOBANK_WEBHOOK_URL",
@@ -42,8 +42,7 @@ export const createPaymentHandler = async (req, res, next) => {
 
     // ✅ Передаем 'user' и 'sexIQ' как отдельные объекты в сервис upsertunifieduser
     const { unifieduser } = await upsertunifieduser({
-      user: restOfUser,
-      sexIQ: sexIQ,
+      ...restOfUser,
     });
     // ✅ Используем _id пользователя, так как sexIQ является отдельным полем
     const userId = unifieduser._id;
