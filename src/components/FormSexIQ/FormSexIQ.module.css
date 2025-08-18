@@ -23,6 +23,9 @@
     text-align: center;
     line-height: 1;
 }
+.titlePersonal{
+    font-size: 10vw;
+}
 .text{
     color: #FFF8EE;
     text-align: center;
@@ -80,4 +83,26 @@
 .sendBtnFormNoValid{
     cursor: not-allowed;
     background-color: #858584;
+}
+
+@media(min-width:768px){
+    .mainForm{
+        max-width: 40%;
+    }
+    .title{
+        font-size: 5vw;
+    }
+    .text{
+        font-size: 2vw;
+    }
+    .priceText{
+        font-size: 2vw;
+        margin-bottom: 5%;
+    }
+    .priceText span{
+        font-size: 1.4vw;
+    }
+    .inputSexIQ{
+        padding: 15px 20px;
+    }
 }

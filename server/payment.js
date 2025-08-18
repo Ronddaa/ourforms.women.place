@@ -14,7 +14,7 @@ const monoBankRedirectUrl = env(
 );
 const monoBankWebhookUrl = env(
   "MONOBANK_WEBHOOK_URL",
-  "https://barcelonakod.women.place/api/payment-callback"
+  "https://ourforms.women.place/api/payment-callback"
 );
 
 // ---------- Обработчик для создания платежа ----------
@@ -48,7 +48,7 @@ export const createPaymentHandler = async (req, res, next) => {
     const userId = unifieduser._id;
 
     const amountInCents = Math.round(totalAmountFromFrontend * 100);
-    const currencyCodeEUR = 980; // Код валюты для EUR
+    const currencyCodeEUR = 978; // Код валюты для EUR
     console.log(
       `💶 Создание платежа на сумму: ${totalAmountFromFrontend} EUR (${amountInCents} центов)`
     );
