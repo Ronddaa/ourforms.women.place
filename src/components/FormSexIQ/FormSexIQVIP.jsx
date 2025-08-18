@@ -38,8 +38,7 @@ export default function FormSexIQVIP() {
     return (
       formData.firstName.trim() &&
       formData.lastName.trim() &&
-      formData.email.trim() &&
-      formData.phone.trim()
+      formData.email.trim()
     );
   };
 
@@ -147,23 +146,6 @@ export default function FormSexIQVIP() {
           value={formData.email}
           onChange={handleChange}
           required
-        />
-        <input
-          className={styles.inputSexIQ}
-          id="phone"
-          type="tel"
-          placeholder="Телефон*"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className={styles.inputSexIQ}
-          id="telegramNick"
-          type="text"
-          placeholder="Telegram"
-          value={formData.telegramNick}
-          onChange={handleChange}
         />
         <button
           type="submit"

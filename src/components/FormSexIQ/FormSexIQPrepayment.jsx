@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styles from "./FormSexIQ.module.css";
 import axios from "axios"; // Додаємо axios для запитів
 
-export default function FormSexIQStandart() {
+export default function FormSexIQPrepayment() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -75,10 +75,10 @@ export default function FormSexIQStandart() {
           transitions: [],
         },
         sexIQ: {
-        type: "online",
-        ticketType: "standart",
-        totalAmount: 549,
-      },
+          type: "online",
+          ticketType: "prepayment",
+          totalAmount: 100,
+        },
         moreInfo: formData.moreInfo || "",
         utm: utmParams, // ✅ Додаємо UTM-параметри до payload
       },
@@ -115,13 +115,15 @@ export default function FormSexIQStandart() {
   return (
     <section className={styles.SexIQSection}>
       <form className={styles.mainForm} onSubmit={handleSubmit}>
-        <h1 className={styles.title}>груповий</h1>
-        <p className={styles.text}>з куратором</p>
-        <p className={styles.priceText}>
-          <span>950€</span>549€
+        <h1 className={`${styles.title} ${styles.titlePrepayment}`}>
+          бронювання місця
+        </h1>
+        <p className={`${styles.text} ${styles.textPrepayment}`}>
+          на психотерапевтичну менторську програму “Sex IQ”
         </p>
+        <p className={styles.priceText}>100€</p>
         <input
-        className={styles.inputSexIQ}
+          className={styles.inputSexIQ}
           id="firstName"
           type="text"
           placeholder="Ім’я*"
@@ -130,7 +132,7 @@ export default function FormSexIQStandart() {
           required
         />
         <input
-        className={styles.inputSexIQ}
+          className={styles.inputSexIQ}
           id="lastName"
           type="text"
           placeholder="Прізвище*"
@@ -139,7 +141,7 @@ export default function FormSexIQStandart() {
           required
         />
         <input
-        className={styles.inputSexIQ}
+          className={styles.inputSexIQ}
           id="email"
           type="email"
           placeholder="Email*"

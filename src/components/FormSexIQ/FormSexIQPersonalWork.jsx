@@ -38,8 +38,7 @@ export default function FormSexIQPersonalWork() {
     return (
       formData.firstName.trim() &&
       formData.lastName.trim() &&
-      formData.email.trim() &&
-      formData.phone.trim()
+      formData.email.trim()
     );
   };
 
