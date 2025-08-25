@@ -11,11 +11,14 @@ export default function ThankUViena() {
           <p className={styles.text}>
             Це дуже важливо, бо це буде твоїм квитком на івент!
           </p>
-          <a className={styles.goToTelegram} href="#">
+          <a
+            className={styles.goToTelegram}
+            href="https://t.me/womenkod_bot?start=vienadinner"
+          >
             перейти
           </a>
         </div>
-            <img src={afisha} className={styles.image} alt="" />            
+        <img src={afisha} className={styles.image} alt="" />
       </section>
     );
 }
