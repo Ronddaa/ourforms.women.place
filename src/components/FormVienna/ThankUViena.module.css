@@ -1,0 +1,60 @@
+.ThankUViena{
+    padding: 200px 5px;
+    background-color: #2B3F1C;
+    height: 100dvh;
+}
+.title{
+    color: #fff;
+    font-size: 7vw;
+    text-transform: uppercase;
+    text-align: center;
+}
+.text{
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    margin: 0 auto 30px;
+    max-width: 80%;
+}
+.goToTelegram{
+    background-color: #fff;
+    color: #2B3F1C;
+    width: 90%;
+    padding: 27px;
+    font-size: 20px;
+    display: block;
+    text-align: center;
+    text-transform: uppercase;
+    border-radius: 10px;
+    font-weight: 600;
+    margin: 0 auto;
+}
+.image{
+    display: none;
+}
+
+@media (min-width:678px){
+    .ThankUViena{
+        display: flex;
+        justify-content: space-between;
+        padding: 40px;
+        gap: 40px;
+    }
+    .wrapper{
+        max-width: 50%;
+        height: 50%;
+        margin: auto 0;
+    }
+    .title{
+        font-size: 3vw;
+    }
+    .text{
+        font-size: 22px;
+    }
+    .image{
+        width: 100%;
+        display: block;
+        height: 100%;
+        object-fit: contain;
+    }
+}

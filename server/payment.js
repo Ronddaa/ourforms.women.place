@@ -6,12 +6,8 @@ import {
 } from "./services/unifiedusers.js";
 import env from "./utils/env.js";
 
-// Переменные окружения для MonoBank, предполагается, что они будут в вашем env файле
+// Переменные окружения для MonoBank
 const monoBankToken = env("MONOBANK_TOKEN");
-const monoBankRedirectUrl = env(
-  "MONOBANK_REDIRECT_URL",
-  "https://ourforms.women.place/sexiqstandart"
-);
 const monoBankWebhookUrl = env(
   "MONOBANK_WEBHOOK_URL",
   "https://ourforms.women.place/api/payment-callback"
@@ -33,14 +29,10 @@ export const createPaymentHandler = async (req, res, next) => {
   }
 
   try {
-    // ✅ ИСПРАВЛЕНО: Передаем весь объект 'user' в сервис upsertunifieduser
-    // и получаем обратно индекс обновленной/созданной записи sexIQ
+    // Сохраняем/обновляем unifieduser
     const { unifieduser, sexIQIndex } = await upsertunifieduser(user);
-    const userId = unifieduser._id;
 
-    // ✅ ИСПРАВЛЕНО: Используем полученный индекс для доступа к правильному элементу
     const totalAmountFromFrontend = unifieduser.sexIQ[sexIQIndex]?.totalAmount;
-
     if (
       typeof totalAmountFromFrontend !== "number" ||
       totalAmountFromFrontend <= 0
@@ -49,18 +41,29 @@ export const createPaymentHandler = async (req, res, next) => {
     }
 
     const amountInCents = Math.round(totalAmountFromFrontend * 100);
-    const currencyCodeEUR = 978; // Код валюты для EUR
+    const currencyCodeEUR = 978; // EUR
     console.log(
       `💶 Создание платежа на сумму: ${totalAmountFromFrontend} EUR (${amountInCents} центов)`
     );
 
-    const redirectUrl = `${monoBankRedirectUrl}/${userId}/sexIQ-payment`;
+    // ----------- ЛОГИКА РЕДИРЕКТА -----------
+    const iventType = unifieduser.sexIQ[sexIQIndex]?.ivent;
+
+    const redirectUrls = {
+      "Viena Dinner": "https://ourforms.women.place/thank-viena",
+      "Other Ivent": "https://ourforms.women.place/thankyou-other",
+      default: "https://ourforms.women.place/sexiqstandart",
+    };
+
+    const paymentRedirectUrl = redirectUrls[iventType] || redirectUrls.default;
+
+    // ----------- Запрос в Monobank -----------
     const monoResponse = await axios.post(
       "https://api.monobank.ua/api/merchant/invoice/create",
       {
         amount: amountInCents,
-        ccy: currencyCodeEUR, // Используем код для EUR
-        redirectUrl,
+        ccy: currencyCodeEUR,
+        redirectUrl: paymentRedirectUrl, // ✅ сразу страница "спасибо"
         webHookUrl: monoBankWebhookUrl,
       },
       {
@@ -76,7 +79,7 @@ export const createPaymentHandler = async (req, res, next) => {
       status: "pending",
     };
 
-    // ✅ ИСПРАВЛЕНО: Обновляем поле paymentData, используя правильный индекс
+    // Обновляем unifieduser с данными о платеже
     unifieduser.sexIQ[sexIQIndex].paymentData = paymentData;
 
     await updateunifieduserById(unifieduser._id, {
@@ -119,7 +122,7 @@ export const paymentCallbackHandler = async (req, res, next) => {
     };
     const monoStatus = status.toLowerCase();
 
-    // ✅ ИСПРАВЛЕНО: Находим нужный элемент в массиве sexIQ по invoiceId
+    // Находим правильный sexIQ элемент
     const sexIQEntry = unifieduser.sexIQ.find(
       (entry) => entry.paymentData?.invoiceId === invoiceId
     );
