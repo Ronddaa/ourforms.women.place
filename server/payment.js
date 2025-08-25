@@ -19,19 +19,27 @@ const monoBankWebhookUrl = env(
 
 // ---------- Обработчик для создания платежа ----------
 export const createPaymentHandler = async (req, res, next) => {
-  // ✅ ИСПРАВЛЕНО: Фронтенд отправляет все данные в объекте 'user'.
   const { user } = req.body;
 
-  if (!user || !user.sexIQ || !user.sexIQ.totalAmount) {
+  if (
+    !user ||
+    !user.sexIQ ||
+    user.sexIQ.length === 0 ||
+    !user.sexIQ[0].totalAmount
+  ) {
     return res.status(400).json({
       error: "Отсутствуют обязательные поля user или sexIQ в запросе.",
     });
   }
 
   try {
-    // ✅ ИСПРАВЛЕНО: Извлекаем sexIQ из объекта 'user', как на фронтенде
-    const { sexIQ, ...restOfUser } = user;
-    const totalAmountFromFrontend = sexIQ.totalAmount;
+    // ✅ ИСПРАВЛЕНО: Передаем весь объект 'user' в сервис upsertunifieduser
+    // и получаем обратно индекс обновленной/созданной записи sexIQ
+    const { unifieduser, sexIQIndex } = await upsertunifieduser(user);
+    const userId = unifieduser._id;
+
+    // ✅ ИСПРАВЛЕНО: Используем полученный индекс для доступа к правильному элементу
+    const totalAmountFromFrontend = unifieduser.sexIQ[sexIQIndex]?.totalAmount;
 
     if (
       typeof totalAmountFromFrontend !== "number" ||
@@ -39,13 +47,6 @@ export const createPaymentHandler = async (req, res, next) => {
     ) {
       return res.status(400).json({ error: "Некорректная сумма для оплаты" });
     }
-
-    // ✅ Передаем 'user' и 'sexIQ' как отдельные объекты в сервис upsertunifieduser
-    const { unifieduser } = await upsertunifieduser({
-      ...restOfUser,
-    });
-    // ✅ Используем _id пользователя, так как sexIQ является отдельным полем
-    const userId = unifieduser._id;
 
     const amountInCents = Math.round(totalAmountFromFrontend * 100);
     const currencyCodeEUR = 978; // Код валюты для EUR
@@ -75,8 +76,8 @@ export const createPaymentHandler = async (req, res, next) => {
       status: "pending",
     };
 
-    // ✅ ИСПРАВЛЕНО: Обновляем поле sexIQ.paymentData напрямую
-    unifieduser.sexIQ.paymentData = paymentData;
+    // ✅ ИСПРАВЛЕНО: Обновляем поле paymentData, используя правильный индекс
+    unifieduser.sexIQ[sexIQIndex].paymentData = paymentData;
 
     await updateunifieduserById(unifieduser._id, {
       sexIQ: unifieduser.sexIQ,
@@ -102,7 +103,6 @@ export const paymentCallbackHandler = async (req, res, next) => {
   }
 
   try {
-    // ✅ ИСПРАВЛЕНО: Ищем по invoiceId в поле sexIQ
     const unifieduser = await unifiedusersCollection.findOne({
       "sexIQ.paymentData.invoiceId": invoiceId,
     });
@@ -119,9 +119,13 @@ export const paymentCallbackHandler = async (req, res, next) => {
     };
     const monoStatus = status.toLowerCase();
 
-    // ✅ ИСПРАВЛЕНО: Обновляем статус в поле sexIQ напрямую, без поиска
-    if (unifieduser.sexIQ && unifieduser.sexIQ.paymentData) {
-      unifieduser.sexIQ.paymentData.status = statusMap[monoStatus] || "failed";
+    // ✅ ИСПРАВЛЕНО: Находим нужный элемент в массиве sexIQ по invoiceId
+    const sexIQEntry = unifieduser.sexIQ.find(
+      (entry) => entry.paymentData?.invoiceId === invoiceId
+    );
+
+    if (sexIQEntry && sexIQEntry.paymentData) {
+      sexIQEntry.paymentData.status = statusMap[monoStatus] || "failed";
 
       await updateunifieduserById(unifieduser._id, {
         sexIQ: unifieduser.sexIQ,

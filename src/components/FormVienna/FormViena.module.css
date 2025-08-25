@@ -1,0 +1,76 @@
+.SexIQViena{
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+}
+.mainForm{
+    
+}
+.title{
+    font-size: 8.2vw;
+    color: #2F1E12;
+    text-align: center;
+    max-width: 98%;
+}
+.byOlimpiaText{
+    font-family: 'Quentin';
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 24px;
+}
+.inputSexIQ{
+    background-color: #2F1E1233;
+    border: 1px solid #2F1E12;
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin: 0 auto 10px;
+    width: 100%;
+}
+.sendBtnForm{
+    background-color: #2F1E12;
+    border-radius: 10px;
+    color: #FFFFFF;
+    width: 100%;
+    padding: 27px;
+    text-transform: uppercase;
+}
+.afisha{
+    display: none;
+}
+
+@media (min-width:768px){
+    .afisha{
+        display: block;
+        max-width: 40%;
+        max-height: 800px;
+        object-fit: cover;
+    }
+    .SexIQViena{
+        flex-direction: row;
+        gap: 90px;
+    }
+    .mainForm{
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+    }
+    .title{
+        font-size: 3vw;
+        text-align: left;
+        max-width: 95%;
+    }
+    .byOlimpiaText{
+        font-size: 2.5vw;
+        text-align: left;
+    }
+    .inputSexIQ{
+        max-width: 560px;
+        padding: 26px 20px;
+        font-size: 22px;
+        margin: 0 0 15px;
+    }
+    .sendBtnForm{
+        max-width: 380px;
+        font-size: 22px;
+    }
+}

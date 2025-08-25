@@ -5,10 +5,8 @@ export const createunifieduserSchema = Joi.object({
     firstName: Joi.string().allow(""),
     lastName: Joi.string().allow(""),
   }),
-
   phoneNumber: Joi.string().allow(""),
   email: Joi.string().email().allow(""),
-
   telegram: Joi.object({
     id: Joi.string().allow("", null),
     userName: Joi.string().allow("", null),
@@ -26,17 +24,23 @@ export const createunifieduserSchema = Joi.object({
       )
       .default([]),
   }).optional(),
-  sexIQ: Joi.object({
-    type: Joi.string().valid("online", "offline").default(""),
-    ticketType: Joi.string().allow(""),
-    totalAmount: Joi.number().min(0).required(),
-    paymentData: Joi.object({
-      invoiceId: Joi.string().allow("", null),
-      status: Joi.string()
-        .valid("pending", "paid", "failed")
-        .default("pending"),
-    }).optional(),
-  }).optional(),
+  sexIQ: Joi.array()
+    .items(
+      Joi.object({
+        ivent: Joi.string().required(),
+        type: Joi.string().valid("online", "offline").required(),
+        ticketType: Joi.string().required(),
+        totalAmount: Joi.number().min(0).required(),
+        paymentData: Joi.object({
+          invoiceId: Joi.string().allow("", null),
+          status: Joi.string()
+            .valid("pending", "paid", "failed")
+            .default("pending"),
+        }).optional(),
+      })
+    )
+    .required()
+    .min(1),
   conferences: Joi.array()
     .items(
       Joi.object({
@@ -62,11 +66,10 @@ export const createunifieduserSchema = Joi.object({
             })
           )
           .default([]),
-        // ⚠️ Добавлено новое поле `moreInfo`
         moreInfo: Joi.string().allow("", null).default(""),
       })
     )
     .min(1),
   createdAt: Joi.date().optional(),
   updatedAt: Joi.date().optional(),
-}).unknown(true); // `unknown(true)` позволяет игнорировать неизвестные поля
+}).unknown(true);

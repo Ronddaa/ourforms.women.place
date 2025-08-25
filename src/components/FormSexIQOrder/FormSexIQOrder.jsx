@@ -254,6 +254,7 @@ export default function FormSexIQOrder() {
             value={formData.moreInfo}
             onChange={handleTextareaChange}
             maxLength={400}
+            required
           />
         </div>
         <button

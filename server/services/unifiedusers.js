@@ -6,7 +6,7 @@ export const upsertunifieduser = async (payload) => {
   console.log(
     "Payload received in upsertunifieduser:",
     JSON.stringify(payload, null, 2)
-  ); // ✅ conferences всегда массив, даже если не пришёл
+  );
 
   const {
     fullName,
@@ -14,7 +14,7 @@ export const upsertunifieduser = async (payload) => {
     email,
     telegram,
     conferences = [],
-    sexIQ, // <--- Здесь нужно быть осторожным
+    sexIQ = [],
     utm,
   } = payload;
 
@@ -40,17 +40,14 @@ export const upsertunifieduser = async (payload) => {
       "Found user on initial search (if any):",
       unifieduserData ? unifieduserData._id : "None found"
     );
-    if (unifieduserData) {
-      console.log(
-        "Existing user's conferences BEFORE update logic:",
-        JSON.stringify(unifieduserData.conferences, null, 2)
-      );
-    }
-  } // ✅ безопасно достаём первую конференцию
+  }
 
+  // ✅ Безопасно получаем данные из массивов payload
   const newConferenceData = conferences[0] || null;
+  const newSexIQData = sexIQ[0] || null;
 
-  let targetConferenceIndex;
+  let targetConferenceIndex = null;
+  let targetSexIQIndex = null;
   let actionTaken = "added";
 
   if (unifieduserData) {
@@ -94,11 +91,11 @@ export const upsertunifieduser = async (payload) => {
           }
         });
       }
-    } // --- Логика обработки конференций ---
+    }
 
+    // --- Логика обработки конференций (остается без изменений) ---
     if (newConferenceData) {
       let foundExistingConferenceToUpdate = false;
-
       for (let i = 0; i < unifieduserData.conferences.length; i++) {
         const existingConf = unifieduserData.conferences[i];
         if (
@@ -118,7 +115,6 @@ export const upsertunifieduser = async (payload) => {
           break;
         }
       }
-
       if (!foundExistingConferenceToUpdate) {
         unifieduserData.conferences.push(newConferenceData);
         targetConferenceIndex = unifieduserData.conferences.length - 1;
@@ -127,15 +123,40 @@ export const upsertunifieduser = async (payload) => {
           `Adding new conference "${newConferenceData.conference}" for user ${unifieduserData._id} at index ${targetConferenceIndex}`
         );
       }
-    } // ✅ Добавляем логику для sexIQ
-    if (sexIQ) {
-      unifieduserData.sexIQ = sexIQ;
-      console.log("Updating existing user with sexIQ data.");
     }
-    console.log(
-      "Unified user data BEFORE save (after conference logic):",
-      JSON.stringify(unifieduserData, null, 2)
-    );
+
+    // ✅ НОВАЯ ЛОГИКА для sexIQ: ищем неоплаченную запись, иначе добавляем новую
+    if (newSexIQData) {
+      let foundExistingSexIQToUpdate = false;
+      for (let i = 0; i < unifieduserData.sexIQ.length; i++) {
+        const existingSexIQ = unifieduserData.sexIQ[i];
+        if (
+          existingSexIQ.ivent === newSexIQData.ivent &&
+          existingSexIQ.paymentData?.status !== "paid"
+        ) {
+          unifieduserData.sexIQ[i] = {
+            ...existingSexIQ,
+            ...newSexIQData,
+          };
+          targetSexIQIndex = i;
+          foundExistingSexIQToUpdate = true;
+          actionTaken = "updated";
+          console.log(
+            `Updating existing non-paid sexIQ ivent "${newSexIQData.ivent}" for user ${unifieduserData._id} at index ${i}`
+          );
+          break;
+        }
+      }
+      if (!foundExistingSexIQToUpdate) {
+        unifieduserData.sexIQ.push(newSexIQData);
+        targetSexIQIndex = unifieduserData.sexIQ.length - 1;
+        actionTaken = "added";
+        console.log(
+          `Adding new sexIQ ivent "${newSexIQData.ivent}" for user ${unifieduserData._id} at index ${targetSexIQIndex}`
+        );
+      }
+    }
+
     await unifieduserData.save();
     console.log(`Existing user ${actionTaken}:`, unifieduserData._id);
   } else {
@@ -146,15 +167,12 @@ export const upsertunifieduser = async (payload) => {
       email,
       telegram,
       conferences: newConferenceData ? [newConferenceData] : [],
-      sexIQ,
+      sexIQ: newSexIQData ? [newSexIQData] : [],
       utm,
-    }; // ✅ Добавляем проверку и дефолтные значения для sexIQ при создании нового пользователя
-
-    if (sexIQ && !sexIQ.type) {
-      newUserData.sexIQ.type = "online";
-    }
+    };
     unifieduserData = await unifiedusersCollection.create(newUserData);
     targetConferenceIndex = newConferenceData ? 0 : null;
+    targetSexIQIndex = newSexIQData ? 0 : null;
     console.log("New user created:", unifieduserData._id);
   }
 
@@ -167,6 +185,7 @@ export const upsertunifieduser = async (payload) => {
   return {
     unifieduser: unifieduserData,
     conferenceIndex: targetConferenceIndex,
+    sexIQIndex: targetSexIQIndex, // ✅ Возвращаем индекс для sexIQ
   };
 };
 

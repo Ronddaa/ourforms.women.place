@@ -26,26 +26,30 @@ const unifiedUserSchema = new Schema(
         },
       ],
     },
-    sexIQ: {
-      type: { type: String, enum: ["online", "offline"]},
-      ticketType: { type: String, default: "" },
-      totalAmount: { type: Number, default: "" },
-      paymentData: {
-        invoiceId: String, // ID инвойса для оплаты
-        status: {
-          type: String,
-          enum: ["pending", "paid", "failed"],
-          default: "failed",
-        }, // Статус оплаты
+    sexIQ: [
+      {
+        ivent: { type: String, default: "" },
+        type: { type: String, enum: ["online", "offline"] },
+        ticketType: { type: String, default: "" },
+        totalAmount: { type: Number, default: 0 },
+        // ✅ Додано 'paymentData' для відповідності схемі, навіть якщо ви не надсилаєте його.
+        paymentData: {
+          invoiceId: String,
+          status: {
+            type: String,
+            enum: ["pending", "paid", "failed"],
+            default: "failed",
+          },
+        },
       },
-    },
+    ],
     conferences: [
       {
         conference: { type: String, default: "" }, // Название конференции или встречи
         type: { type: String, enum: ["online", "offline"], default: "" }, // Онлайн или офлайн встреча
         ticketType: { type: String, default: "" }, // Тип билета или тарифа
         ticketsQuantity: { type: Number, default: "" }, // Количество билетов или мест на мероприятие
-        totalAmount: { type: Number, default: "" }, // Общая сумма потраченная на покупку мест или билетов
+        totalAmount: { type: Number, default: 0 }, // Общая сумма потраченная на покупку мест или билетов
         takeBrunch: { type: Boolean, default: false }, // Была ли выбрана опция "Бранч"
         paymentData: {
           invoiceId: String, // ID инвойса для оплаты
