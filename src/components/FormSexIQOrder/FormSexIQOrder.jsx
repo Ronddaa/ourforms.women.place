@@ -70,24 +70,12 @@ export default function FormSexIQOrder() {
       source: [],
       transitions: [],
     },
-    conferences: [
+    sexIQ: [
       {
-        conference: "Sex IQ ORDER",
+        ivent: "Sex IQ ORDER",
         type: "online",
-        ticketType: "without ticket",
-        ticketsQuantity: 1,
+        ticketType: "ORDER",
         totalAmount: 0,
-        takeBrunch: false,
-        paymentData: {},
-        promoCode: "",
-        utmMarks: [
-          {
-            source: utmParams.utm_source || "",
-            medium: utmParams.utm_medium || "",
-            campaign: utmParams.utm_campaign || "",
-          },
-        ],
-        moreInfo: formData.moreInfo || "",
       },
     ],
   };
