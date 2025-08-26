@@ -74,11 +74,14 @@ export default function FormSexIQStandart() {
           source: [],
           transitions: [],
         },
-        sexIQ: {
-        type: "online",
-        ticketType: "standart",
-        totalAmount: 549,
-      },
+        sexIQ: [
+          {
+            ivent: "Viena Dinner",
+            type: "offline",
+            ticketType: "Viena Dinner",
+            totalAmount: 549,
+          },
+        ],
         moreInfo: formData.moreInfo || "",
         utm: utmParams, // ✅ Додаємо UTM-параметри до payload
       },

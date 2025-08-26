@@ -74,11 +74,14 @@ export default function FormSexIQPrepayment() {
           source: [],
           transitions: [],
         },
-        sexIQ: {
-          type: "online",
-          ticketType: "prepayment",
-          totalAmount: 100,
-        },
+        sexIQ: [
+          {
+            ivent: "Viena Dinner",
+            type: "offline",
+            ticketType: "Viena Dinner",
+            totalAmount: 100,
+          },
+        ],
         moreInfo: formData.moreInfo || "",
         utm: utmParams, // ✅ Додаємо UTM-параметри до payload
       },
