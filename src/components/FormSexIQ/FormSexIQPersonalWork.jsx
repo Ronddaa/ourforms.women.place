@@ -76,9 +76,9 @@ export default function FormSexIQPersonalWork() {
         },
         sexIQ: [
           {
-            ivent: "Viena Dinner",
+            ivent: "SexIQ",
             type: "offline",
-            ticketType: "Viena Dinner",
+            ticketType: "Personal Working",
             totalAmount: 990,
           },
         ],
