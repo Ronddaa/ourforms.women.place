@@ -9,8 +9,8 @@ export default function FormSexIQOrder() {
     lastName: "",
     email: "",
     phone: "",
-      telegramNick: "",
-    moreInfo: ""
+    telegramNick: "",
+    moreInfo: "",
   });
 
   const [utmParams, setUtmParams] = useState({});
@@ -41,71 +41,70 @@ export default function FormSexIQOrder() {
     );
   };
 
- const handleSubmit = async (e) => {
-   e.preventDefault();
-   if (!isFormValid()) {
-     alert("Будь ласка, заповніть усі обов'язкові поля.");
-     return;
-   }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!isFormValid()) {
+      alert("Будь ласка, заповніть усі обов'язкові поля.");
+      return;
+    }
 
-   const cleanTelegramNick = formData.telegramNick.startsWith("@")
-     ? formData.telegramNick.substring(1)
-     : formData.telegramNick;
+    const cleanTelegramNick = formData.telegramNick.startsWith("@")
+      ? formData.telegramNick.substring(1)
+      : formData.telegramNick;
 
-  const payload = {
-    fullName: {
-      // ⚠️ Эти поля должны быть на верхнем уровне
-      firstName: formData.firstName || "",
-      lastName: formData.lastName || "",
-    },
-    phoneNumber: formData.phone || "",
-    email: formData.email.toLowerCase() || "",
-    telegram: {
-      id: "",
-      userName: cleanTelegramNick || "",
-      firstName: "",
-      languageCode: "",
-      phone: "",
-      isPremium: false,
-      source: [],
-      transitions: [],
-    },
-    sexIQ: [
-      {
-        ivent: "ORDERSexIQ",
-        type: "online",
-        ticketType: "ORDER",
-        totalAmount: 0,
+    const payload = {
+      fullName: {
+        // ⚠️ Эти поля должны быть на верхнем уровне
+        firstName: formData.firstName || "",
+        lastName: formData.lastName || "",
       },
-    ],
-  };
-
-   try {
-     await api.createUnifiedUser(payload);
-
-     alert("Анкету успішно надіслано! З вами зв'яжеться команда ❤️");
-     setFormData({
-       firstName: "",
-       lastName: "",
-       email: "",
-       phone: "",
-       telegramNick: "",
-       moreInfo: "",
-     });
-   } catch (error) {
-     console.error("Помилка при збереженні анкети:", error);
-     alert("Виникла помилка. Спробуйте ще раз.");
-   }
- };
-    
-    const handleTextareaChange = (e) => {
-      const textarea = e.target;
-      textarea.style.height = "auto"; // сброс, чтобы корректно считать scrollHeight
-      textarea.style.height = textarea.scrollHeight + "px"; // подгон под контент
-
-      handleChange(e); // твоя логика обновления formData
+      phoneNumber: formData.phone || "",
+      email: formData.email.toLowerCase() || "",
+      telegram: {
+        id: "",
+        userName: cleanTelegramNick || "",
+        firstName: "",
+        languageCode: "",
+        phone: "",
+        isPremium: false,
+        source: [],
+        transitions: [],
+      },
+      sexIQ: [
+        {
+          event: "ORDERSexIQ",
+          type: "online",
+          ticketType: "ORDER",
+          totalAmount: 0,
+        },
+      ],
     };
 
+    try {
+      await api.createUnifiedUser(payload);
+
+      alert("Анкету успішно надіслано! З вами зв'яжеться команда ❤️");
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        telegramNick: "",
+        moreInfo: "",
+      });
+    } catch (error) {
+      console.error("Помилка при збереженні анкети:", error);
+      alert("Виникла помилка. Спробуйте ще раз.");
+    }
+  };
+
+  const handleTextareaChange = (e) => {
+    const textarea = e.target;
+    textarea.style.height = "auto"; // сброс, чтобы корректно считать scrollHeight
+    textarea.style.height = textarea.scrollHeight + "px"; // подгон под контент
+
+    handleChange(e); // твоя логика обновления formData
+  };
 
   return (
     <section className={styles.FormSexIQSection}>

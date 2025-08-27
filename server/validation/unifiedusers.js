@@ -27,7 +27,7 @@ export const createunifieduserSchema = Joi.object({
   sexIQ: Joi.array()
     .items(
       Joi.object({
-        ivent: Joi.string().required(),
+        event: Joi.string().required(),
         type: Joi.string().valid("online", "offline").required(),
         ticketType: Joi.string().required(),
         totalAmount: Joi.number().min(0).required(),

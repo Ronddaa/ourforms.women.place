@@ -47,15 +47,15 @@ export const createPaymentHandler = async (req, res, next) => {
     );
 
     // ----------- ЛОГИКА РЕДИРЕКТА -----------
-    const iventType = unifieduser.sexIQ[sexIQIndex]?.ivent;
+    const eventType = unifieduser.sexIQ[sexIQIndex]?.event;
 
     const redirectUrls = {
       "Viena Dinner": "https://ourforms.women.place/thank-viena",
-      "Other Ivent": "https://ourforms.women.place/thankyou-other",
+      "Other event": "https://ourforms.women.place/thankyou-other",
       default: "https://ourforms.women.place/sexiqstandart",
     };
 
-    const paymentRedirectUrl = redirectUrls[iventType] || redirectUrls.default;
+    const paymentRedirectUrl = redirectUrls[eventType] || redirectUrls.default;
 
     // ----------- Запрос в Monobank -----------
     const monoResponse = await axios.post(

@@ -131,7 +131,7 @@ export const upsertunifieduser = async (payload) => {
       for (let i = 0; i < unifieduserData.sexIQ.length; i++) {
         const existingSexIQ = unifieduserData.sexIQ[i];
         if (
-          existingSexIQ.ivent === newSexIQData.ivent &&
+          existingSexIQ.event === newSexIQData.event &&
           existingSexIQ.paymentData?.status !== "paid"
         ) {
           unifieduserData.sexIQ[i] = {
@@ -142,7 +142,7 @@ export const upsertunifieduser = async (payload) => {
           foundExistingSexIQToUpdate = true;
           actionTaken = "updated";
           console.log(
-            `Updating existing non-paid sexIQ ivent "${newSexIQData.ivent}" for user ${unifieduserData._id} at index ${i}`
+            `Updating existing non-paid sexIQ event "${newSexIQData.event}" for user ${unifieduserData._id} at index ${i}`
           );
           break;
         }
@@ -152,7 +152,7 @@ export const upsertunifieduser = async (payload) => {
         targetSexIQIndex = unifieduserData.sexIQ.length - 1;
         actionTaken = "added";
         console.log(
-          `Adding new sexIQ ivent "${newSexIQData.ivent}" for user ${unifieduserData._id} at index ${targetSexIQIndex}`
+          `Adding new sexIQ event "${newSexIQData.event}" for user ${unifieduserData._id} at index ${targetSexIQIndex}`
         );
       }
     }

@@ -76,7 +76,7 @@ export default function FormSexIQPersonalWork() {
         },
         sexIQ: [
           {
-            ivent: "SexIQ",
+            event: "SexIQ",
             type: "offline",
             ticketType: "Personal Working",
             totalAmount: 990,
@@ -118,7 +118,9 @@ export default function FormSexIQPersonalWork() {
   return (
     <section className={styles.SexIQSection}>
       <form className={styles.mainForm} onSubmit={handleSubmit}>
-        <h1 className={`${styles.title} ${styles.titlePersonal}`}>Індивідуальна робота</h1>
+        <h1 className={`${styles.title} ${styles.titlePersonal}`}>
+          Індивідуальна робота
+        </h1>
         <p className={styles.text}> з Анастасією</p>
         <p className={styles.priceText}>
           <span>5000€</span>3500€

@@ -28,7 +28,7 @@ const unifiedUserSchema = new Schema(
     },
     sexIQ: [
       {
-        ivent: { type: String, default: "" },
+        event: { type: String, default: "" },
         type: { type: String, enum: ["online", "offline"] },
         ticketType: { type: String, default: "" },
         totalAmount: { type: Number, default: 0 },

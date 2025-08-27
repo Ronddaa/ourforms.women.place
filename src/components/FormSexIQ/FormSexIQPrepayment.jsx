@@ -76,7 +76,7 @@ export default function FormSexIQPrepayment() {
         },
         sexIQ: [
           {
-            ivent: "SexIQ",
+            event: "SexIQ",
             type: "offline",
             ticketType: "Prepayment",
             totalAmount: 100,

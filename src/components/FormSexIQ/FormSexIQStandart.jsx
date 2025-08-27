@@ -76,7 +76,7 @@ export default function FormSexIQStandart() {
         },
         sexIQ: [
           {
-            ivent: "SexIQ",
+            event: "SexIQ",
             type: "offline",
             ticketType: "Standart",
             totalAmount: 549,
@@ -124,7 +124,7 @@ export default function FormSexIQStandart() {
           <span>950€</span>549€
         </p>
         <input
-        className={styles.inputSexIQ}
+          className={styles.inputSexIQ}
           id="firstName"
           type="text"
           placeholder="Ім’я*"
@@ -133,7 +133,7 @@ export default function FormSexIQStandart() {
           required
         />
         <input
-        className={styles.inputSexIQ}
+          className={styles.inputSexIQ}
           id="lastName"
           type="text"
           placeholder="Прізвище*"
@@ -142,7 +142,7 @@ export default function FormSexIQStandart() {
           required
         />
         <input
-        className={styles.inputSexIQ}
+          className={styles.inputSexIQ}
           id="email"
           type="email"
           placeholder="Email*"
