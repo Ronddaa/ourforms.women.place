@@ -13,7 +13,7 @@ export default function ThankUViena() {
           </p>
           <a
             className={styles.goToTelegram}
-            href="https://t.me/womenkod_bot?start=vienadinner"
+            href="https://t.me/+yYRBbVpA4xowNTMy"
           >
             перейти
           </a>
