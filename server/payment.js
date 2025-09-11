@@ -1,3 +1,5 @@
+// payment.js
+
 import axios from "axios";
 import { unifiedusersCollection } from "./db/models/unifiedusers.js";
 import {
@@ -17,43 +19,72 @@ const monoBankWebhookUrl = env(
 export const createPaymentHandler = async (req, res, next) => {
   const { user } = req.body;
 
-  if (
-    !user ||
-    !user.sexIQ ||
-    user.sexIQ.length === 0 ||
-    !user.sexIQ[0].totalAmount
-  ) {
+  // LOG: Логируем полученный payload перед обработкой
+  console.log("📢 [createPaymentHandler] Получен запрос на создание платежа.");
+  console.log("Тело запроса (req.body):", JSON.stringify(req.body, null, 2));
+
+  if (!user) {
+    console.error(
+      "❌ [createPaymentHandler] Отсутствует обязательный объект 'user' в запросе."
+    );
     return res.status(400).json({
-      error: "Отсутствуют обязательные поля user или sexIQ в запросе.",
+      error: "Отсутствует обязательный объект user в запросе.",
     });
   }
 
-  try {
-    // Сохраняем/обновляем unifieduser
-    const { unifieduser, sexIQIndex } = await upsertunifieduser(user);
+  let paymentDataArray;
+  let eventType;
+  let totalAmountFromFrontend;
 
-    const totalAmountFromFrontend = unifieduser.sexIQ[sexIQIndex]?.totalAmount;
-    if (
-      typeof totalAmountFromFrontend !== "number" ||
-      totalAmountFromFrontend <= 0
-    ) {
-      return res.status(400).json({ error: "Некорректная сумма для оплаты" });
-    }
+  // Определяем, какой массив использовать (sexIQ или conferences)
+  if (user.sexIQ && user.sexIQ.length > 0) {
+    paymentDataArray = user.sexIQ;
+    eventType = user.sexIQ[0]?.event;
+    totalAmountFromFrontend = paymentDataArray[0]?.totalAmount;
+  } else if (user.conferences && user.conferences.length > 0) {
+    paymentDataArray = user.conferences;
+    eventType = user.conferences[0]?.conference;
+    totalAmountFromFrontend = paymentDataArray[0]?.totalAmount;
+  } else {
+    console.error(
+      "❌ [createPaymentHandler] Отсутствуют обязательные поля sexIQ или conferences в запросе."
+    );
+    return res.status(400).json({
+      error: "Отсутствуют обязательные поля sexIQ или conferences в запросе.",
+    });
+  }
+
+  if (
+    typeof totalAmountFromFrontend !== "number" ||
+    totalAmountFromFrontend <= 0
+  ) {
+    console.error(
+      "❌ [createPaymentHandler] Некорректная или отсутствующая сумма для оплаты."
+    );
+    return res.status(400).json({ error: "Некорректная сумма для оплаты" });
+  }
+
+  try {
+    const { unifieduser } = await upsertunifieduser(user);
 
     const amountInCents = Math.round(totalAmountFromFrontend * 100);
     const currencyCodeEUR = 978; // EUR
+
     console.log(
-      `💶 Создание платежа на сумму: ${totalAmountFromFrontend} EUR (${amountInCents} центов)`
+      `💶 [createPaymentHandler] Создание платежа на сумму: ${totalAmountFromFrontend} EUR (${amountInCents} центов)`
     );
 
     // ----------- ЛОГИКА РЕДИРЕКТА -----------
-    const eventType = unifieduser.sexIQ[sexIQIndex]?.event;
-
-    const redirectUrls = {
-      "Viena Dinner": "https://ourforms.women.place/thank-viena",
-      "Other event": "https://ourforms.women.place/thankyou-other",
-      default: "https://ourforms.women.place/sexiqstandart",
-    };
+     const redirectUrls = {
+       "Viena Dinner": "https://ourforms.women.place/thank-viena",
+       "Other event": "https://ourforms.women.place/thankyou-other",
+       prahakod: "https://prahakod.women.place/thank-you", // ✅ Обновленный URL
+       barcelonakod: "https://barcelonakod.women.place/thank-you", // ✅ Добавленный URL
+       vienakod: "https://vienakod.women.place/thank-you", // ✅ Добавленный URL
+       warsawkod: "https://warsawkod.women.place/thank-you", // ✅ Добавленный URL
+       sexiq: "https://ourforms.women.place/sexiqstandart",
+       default: "https://ourforms.women.place/thankyou",
+     };
 
     const paymentRedirectUrl = redirectUrls[eventType] || redirectUrls.default;
 
@@ -63,7 +94,7 @@ export const createPaymentHandler = async (req, res, next) => {
       {
         amount: amountInCents,
         ccy: currencyCodeEUR,
-        redirectUrl: paymentRedirectUrl, // ✅ сразу страница "спасибо"
+        redirectUrl: paymentRedirectUrl,
         webHookUrl: monoBankWebhookUrl,
       },
       {
@@ -80,18 +111,35 @@ export const createPaymentHandler = async (req, res, next) => {
     };
 
     // Обновляем unifieduser с данными о платеже
-    unifieduser.sexIQ[sexIQIndex].paymentData = paymentData;
+    const sexIQIndex = unifieduser.sexIQ.findIndex(
+      (item) => item.event === eventType
+    );
+    const conferencesIndex = unifieduser.conferences.findIndex(
+      (item) => item.conference === eventType
+    );
 
-    await updateunifieduserById(unifieduser._id, {
-      sexIQ: unifieduser.sexIQ,
-    });
+    if (sexIQIndex !== -1) {
+      unifieduser.sexIQ[sexIQIndex].paymentData = paymentData;
+      await updateunifieduserById(unifieduser._id, {
+        sexIQ: unifieduser.sexIQ,
+      });
+    } else if (conferencesIndex !== -1) {
+      unifieduser.conferences[conferencesIndex].paymentData = paymentData;
+      await updateunifieduserById(unifieduser._id, {
+        conferences: unifieduser.conferences,
+      });
+    }
 
+    console.log("✅ [createPaymentHandler] Платеж успешно создан.");
     res.status(200).json({
       invoiceId: monoResponse.data.invoiceId,
       pageUrl: monoResponse.data.pageUrl,
     });
   } catch (error) {
-    console.error("Ошибка при создании оплаты:", error);
+    console.error(
+      "❌ [createPaymentHandler] Ошибка при создании оплаты:",
+      error
+    );
     next(error);
   }
 };

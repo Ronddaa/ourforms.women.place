@@ -7,6 +7,7 @@ import FormSexIQPersonalWork from "./components/FormSexIQ/FormSexIQPersonalWork"
 import FormSexIQPrepayment from "./components/FormSexIQ/FormSexIQPrepayment";
 import FormSexIQViena from "./components/FormVienna/FormSexIQViena";
 import ThankUViena from "./components/FormVienna/ThankUViena";
+import WomenKodTickets from "./components/WomenKodTickets/WomenKodTicket";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
       <Route path="/sexiqprepayment" element={<FormSexIQPrepayment />} />
       <Route path="/formvienadinner" element={<FormSexIQViena />} />
       <Route path="/thank-viena" element={<ThankUViena />} />
+      <Route path="/womenkodpayments" element={<WomenKodTickets />} />
     </Routes>
   );
 }

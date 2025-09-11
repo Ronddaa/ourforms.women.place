@@ -1,3 +1,5 @@
+// src/api/api.js
+
 import axios from "axios";
 
 class ApiClient {
@@ -27,6 +29,26 @@ class ApiClient {
       throw error;
     } else {
       throw new Error(String(error));
+    }
+  }
+
+  // Новый метод для поиска пользователя по Telegram ID или нику
+  async findUserByTelegram(telegramId, telegramUserName) {
+    try {
+      // ИЗМЕНЯЕМ ПУТЬ ЗАПРОСА
+      const { data } = await this.axiosInstance.post(
+        "/unifiedusers/find-unified-user",
+        {
+          telegramId,
+          telegramUserName,
+        }
+      );
+      return data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return null;
+      }
+      this.handleError(error);
     }
   }
 

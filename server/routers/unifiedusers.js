@@ -58,4 +58,37 @@ router.post(
   ctrlWrapper(sendTicketToUserController)
 );
 
+// НОВЫЙ РОУТ ДЛЯ ПОИСКА ПОЛЬЗОВАТЕЛЯ ПО TELEGRAM-ДАННЫМ
+router.post("/find-unified-user", async (req, res, next) => {
+  try {
+    const { telegramId, telegramUserName } = req.body;
+
+    const searchQuery = { $or: [] };
+
+    if (telegramId && telegramId.trim() !== "") {
+      searchQuery.$or.push({ "telegram.id": telegramId });
+    }
+    if (telegramUserName && telegramUserName.trim() !== "") {
+      searchQuery.$or.push({ "telegram.userName": telegramUserName });
+    }
+
+    if (searchQuery.$or.length === 0) {
+      // Возвращаем 400 Bad Request, если нет данных для поиска
+      return res.status(400).json({ message: "Необходимо указать telegramId или telegramUserName" });
+    }
+
+    const user = await unifiedusersCollection.findOne(searchQuery);
+
+    if (!user) {
+      // Возвращаем 404 Not Found, если пользователь не найден
+      return res.status(404).json({ message: "Пользователь не найден" });
+    }
+
+    // Если пользователь найден, отправляем его данные
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

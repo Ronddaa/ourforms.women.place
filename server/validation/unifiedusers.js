@@ -2,11 +2,11 @@ import Joi from "joi";
 
 export const createunifieduserSchema = Joi.object({
   fullName: Joi.object({
-    firstName: Joi.string().allow(""),
-    lastName: Joi.string().allow(""),
-  }),
-  phoneNumber: Joi.string().allow(""),
-  email: Joi.string().email().allow(""),
+    firstName: Joi.string().allow("", null),
+    lastName: Joi.string().allow("", null),
+  }).optional(),
+  phoneNumber: Joi.string().allow("", null),
+  email: Joi.string().email().allow("", null),
   telegram: Joi.object({
     id: Joi.string().allow("", null),
     userName: Joi.string().allow("", null),
@@ -27,34 +27,36 @@ export const createunifieduserSchema = Joi.object({
   sexIQ: Joi.array()
     .items(
       Joi.object({
-        event: Joi.string().required(),
-        type: Joi.string().valid("online", "offline").required(),
-        ticketType: Joi.string().required(),
-        totalAmount: Joi.number().min(0).required(),
+        event: Joi.string().allow("", null),
+        type: Joi.string().valid("online", "offline").allow("", null),
+        ticketType: Joi.string().allow("", null),
+        totalAmount: Joi.number().min(0).allow(null).default(0),
         paymentData: Joi.object({
           invoiceId: Joi.string().allow("", null),
           status: Joi.string()
             .valid("pending", "paid", "failed")
-            .default("pending"),
+            .default("pending")
+            .allow("", null),
         }).optional(),
       })
     )
-    .required()
-    .min(1),
+    .optional()
+    .default([]),
   conferences: Joi.array()
     .items(
       Joi.object({
-        conference: Joi.string(),
-        type: Joi.string().valid("online", "offline"),
-        ticketType: Joi.string(),
-        ticketsQuantity: Joi.number().integer().min(1),
-        totalAmount: Joi.number().min(0).optional().default(0),
-        takeBrunch: Joi.boolean().default(false),
+        conference: Joi.string().allow("", null),
+        type: Joi.string().valid("online", "offline").allow("", null),
+        ticketType: Joi.string().allow("", null),
+        ticketsQuantity: Joi.number().integer().min(0).allow(null).default(0),
+        totalAmount: Joi.number().min(0).allow(null).default(0),
+        takeBrunch: Joi.boolean().allow(null).default(false),
         paymentData: Joi.object({
           invoiceId: Joi.string().allow("", null),
           status: Joi.string()
             .valid("pending", "paid", "failed")
-            .default("pending"),
+            .default("pending")
+            .allow("", null),
         }).optional(),
         promoCode: Joi.string().allow("", null).default(""),
         utmMarks: Joi.array()
@@ -69,7 +71,8 @@ export const createunifieduserSchema = Joi.object({
         moreInfo: Joi.string().allow("", null).default(""),
       })
     )
-    .min(1),
+    .optional()
+    .default([]),
   createdAt: Joi.date().optional(),
   updatedAt: Joi.date().optional(),
 }).unknown(true);

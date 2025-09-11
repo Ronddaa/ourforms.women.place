@@ -42,7 +42,6 @@ export const upsertunifieduser = async (payload) => {
     );
   }
 
-  // ✅ Безопасно получаем данные из массивов payload
   const newConferenceData = conferences[0] || null;
   const newSexIQData = sexIQ[0] || null;
 
@@ -51,7 +50,6 @@ export const upsertunifieduser = async (payload) => {
   let actionTaken = "added";
 
   if (unifieduserData) {
-    // --- Обновляем основные данные ---
     unifieduserData.fullName = {
       firstName:
         fullName?.firstName || unifieduserData.fullName.firstName || "",
@@ -93,7 +91,6 @@ export const upsertunifieduser = async (payload) => {
       }
     }
 
-    // --- Логика обработки конференций (остается без изменений) ---
     if (newConferenceData) {
       let foundExistingConferenceToUpdate = false;
       for (let i = 0; i < unifieduserData.conferences.length; i++) {
@@ -125,7 +122,6 @@ export const upsertunifieduser = async (payload) => {
       }
     }
 
-    // ✅ НОВАЯ ЛОГИКА для sexIQ: ищем неоплаченную запись, иначе добавляем новую
     if (newSexIQData) {
       let foundExistingSexIQToUpdate = false;
       for (let i = 0; i < unifieduserData.sexIQ.length; i++) {
@@ -160,7 +156,6 @@ export const upsertunifieduser = async (payload) => {
     await unifieduserData.save();
     console.log(`Existing user ${actionTaken}:`, unifieduserData._id);
   } else {
-    // --- Создаём нового пользователя ---
     const newUserData = {
       fullName,
       phoneNumber,
@@ -185,7 +180,7 @@ export const upsertunifieduser = async (payload) => {
   return {
     unifieduser: unifieduserData,
     conferenceIndex: targetConferenceIndex,
-    sexIQIndex: targetSexIQIndex, // ✅ Возвращаем индекс для sexIQ
+    sexIQIndex: targetSexIQIndex,
   };
 };
 
