@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import styles from "./WomenKodTicket.module.css";
 import api from "../../api/api.js";
 import axios from "axios";
+import back from './back.png'
 
 export default function WomenKodTickets() {
   const initialState = {
@@ -49,12 +50,17 @@ export default function WomenKodTickets() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const utmTicketType = params.get("utm_tickettype");
+    const formattedTicketType = utmTicketType
+      ? utmTicketType.toUpperCase().replace("-", " ")
+      : "";
+
     const newUtmParams = {
       utm_source: params.get("utm_source") || "",
       utm_medium: params.get("utm_medium") || "",
       utm_campaign: params.get("utm_campaign") || "",
       utm_conference: params.get("utm_conference") || "",
-      utm_tickettype: params.get("utm_tickettype") || "",
+      utm_tickettype: formattedTicketType,
       utm_totalamount: params.get("utm_totalamount") || "",
     };
     setUtmParams(newUtmParams);
@@ -310,7 +316,8 @@ export default function WomenKodTickets() {
   }
 
   return (
-    <div className={styles.modalTicketsForm}>
+    <section className={styles.modalTicketsForm}>
+      <img src={back} alt="" className={styles.back} />
       <div className={styles.modalTicketsFormContent}>
         <h2 className={styles.titleTicketsForm}>придбати квиток</h2>
 
@@ -528,6 +535,6 @@ export default function WomenKodTickets() {
           </button>
         </form>
       </div>
-    </div>
+    </section>
   );
 }
