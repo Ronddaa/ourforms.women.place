@@ -72,7 +72,7 @@ export default function FormSexIQOrder() {
       },
       sexIQ: [
         {
-          event: "SexIQ-18.09",
+          event: "Анкета 18.09",
           type: "online",
           ticketType: "ORDER",
           totalAmount: 0,
