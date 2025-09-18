@@ -76,6 +76,7 @@ export default function FormSexIQOrder() {
           type: "online",
           ticketType: "ORDER",
           totalAmount: 0,
+          moreInfo: formData.moreInfo,
         },
       ],
     };

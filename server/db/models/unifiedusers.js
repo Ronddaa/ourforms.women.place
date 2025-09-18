@@ -41,6 +41,7 @@ const unifiedUserSchema = new Schema(
             default: "failed",
           },
         },
+        moreInfo: { type: String, default: "" },
       },
     ],
     conferences: [
@@ -67,7 +68,6 @@ const unifiedUserSchema = new Schema(
             campaign: { type: String, default: "" },
           },
         ], // Массив UTM меток
-        moreInfo: { type: String, default: "" },
       },
     ],
   },

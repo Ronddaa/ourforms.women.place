@@ -38,6 +38,7 @@ export const createunifieduserSchema = Joi.object({
             .default("pending")
             .allow("", null),
         }).optional(),
+        moreInfo: Joi.string().allow("", null).default(""),
       })
     )
     .optional()
@@ -68,7 +69,6 @@ export const createunifieduserSchema = Joi.object({
             })
           )
           .default([]),
-        moreInfo: Joi.string().allow("", null).default(""),
       })
     )
     .optional()
