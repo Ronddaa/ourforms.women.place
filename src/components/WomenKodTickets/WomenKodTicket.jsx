@@ -44,8 +44,8 @@ export default function WomenKodTickets() {
   const tariffs = [
     { name: "LAST MINUTE", price: 150 },
     { name: "GOLD", price: 300 },
-    { name: "PREMIUM", price: 450 },
-    { name: "LUXE", price: 1200 },
+    // { name: "PREMIUM", price: 450 },
+    // { name: "LUXE", price: 1200 },
   ];
 
   useEffect(() => {
@@ -150,7 +150,7 @@ export default function WomenKodTickets() {
     } else if (promoCode === "WOMENKOD2025") {
       price = Math.max(0, price - 20);
     } else if (promoCode === "AGIBALOVA10") {
-      price = Math.max(0, price - 10);
+      price = Math.max(0, price - 20);
     } else if (promoCode === "ARINA10") {
       price = Math.round(price * 0.9);
     } else if (promoCode === "WOMAN10") {
